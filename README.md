@@ -18,9 +18,16 @@ https://github.com/h025/ruyio-market
 | [Screenshot / 截图](plugins/screenshot) | Select part of the screen with the system screenshot UI, copy it, or pin it above other windows; keeps the last 50 captures. 框选截图，复制或钉在屏幕最上层，保留最近 50 张。 | `screen.capture`, `windows.pin`, `clipboard.write` |
 
 Screenshot shortcuts (change them in Ruyio → Shortcuts): **⌃⇧A** capture to clipboard, **⌃⇧P** capture and
-pin. On a pinned image: drag to move, scroll or pinch to zoom, right-click for copy / save / opacity, **Esc**
-to close. The first capture asks to allow **Ruyio Capture Helper** under Screen & System Audio Recording;
+pin. On a pinned image: drag to move, scroll or pinch to zoom, hover and click the close button to close it,
+right-click for copy / save / zoom / opacity / close all. **Esc** does not close a pin. 钉图可拖动、滚动或捏合缩放，
+悬停显示关闭按钮，右键可复制、存储、调整透明度；按 Esc 不会关闭。The first capture asks to allow **Ruyio Capture Helper** under Screen & System Audio Recording;
 neither Ruyio itself nor any plugin receives that permission.
+
+## Writing a plugin / 编写插件
+
+See **[WRITING_PLUGINS.md](WRITING_PLUGINS.md)** (中文): how a Ruyio plugin works, the manifest, the SDK, and
+how to add, build and publish a plugin in this repository. The full reference is in the
+[Ruyio Wiki](https://github.com/h025/Ruyio/wiki).
 
 ## Layout
 
