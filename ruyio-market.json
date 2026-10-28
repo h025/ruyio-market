@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "kind": "market",
+  "id": "io.github.h025.ruyio-market",
+  "name": "Ruyio Plugins",
+  "description": "Plugins for Ruyio by h025. 由 h025 维护的 Ruyio 插件。",
+  "plugins": [
+    {
+      "id": "io.github.h025.screenshot",
+      "manifest": "plugins/screenshot/ruyio-plugin.json",
+      "name": "Screenshot / 截图",
+      "summary": "Capture part of the screen, copy it, and pin it above other windows. 框选截图，复制或钉在屏幕上。"
+    }
+  ]
+}

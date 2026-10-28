@@ -1,0 +1,53 @@
+# Built by Scripts/build-plugin.sh, which sets RUYIO_ROOT to a Ruyio checkout (default: ../Ruyio next to
+# this repository) for the plugin SDK.
+name: Screenshot
+options:
+  bundleIdPrefix: io.github.h025
+  deploymentTarget:
+    macOS: "15.0"
+packages:
+  RuyioKit:
+    path: ${RUYIO_ROOT}/Packages/RuyioKit
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    ARCHS: arm64
+    ONLY_ACTIVE_ARCH: NO
+    MACOSX_DEPLOYMENT_TARGET: "15.0"
+    CODE_SIGN_STYLE: Manual
+    CODE_SIGN_IDENTITY: "-"
+    DEVELOPMENT_TEAM: ""
+    ENABLE_HARDENED_RUNTIME: YES
+    DEAD_CODE_STRIPPING: YES
+targets:
+  Screenshot:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources
+      - path: manifest.json
+        buildPhase: resources
+    dependencies:
+      - package: RuyioKit
+        product: RuyioPluginSDK
+    info:
+      path: build/Info.plist
+      properties:
+        LSUIElement: true
+        LSMinimumSystemVersion: "15.0"
+        CFBundleShortVersionString: "1.0.0"
+        CFBundleVersion: "1"
+    entitlements:
+      path: build/Screenshot.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.h025.screenshot
+        PRODUCT_NAME: Screenshot
+        CODE_SIGN_INJECT_BASE_ENTITLEMENTS: NO
+schemes:
+  Screenshot:
+    build:
+      targets:
+        Screenshot: all

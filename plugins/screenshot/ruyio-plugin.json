@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "kind": "plugin",
+  "releases": [
+    {
+      "version": "1.0.0",
+      "minimumHostVersion": "1.1.0",
+      "minimumMacOSVersion": "15.0",
+      "architectures": [
+        "arm64"
+      ],
+      "artifact": "releases/1.0.0/Screenshot.ruyioplugin.zip",
+      "sha256": "48ed0056f2ac1326afd6e6213df1bd237ba047d884504a569edf9d3fdafe2b9a"
+    }
+  ],
+  "id": "io.github.h025.screenshot",
+  "name": "Screenshot",
+  "description": "Capture part of the screen, copy it, and pin it above other windows.",
+  "source": "https://github.com/h025/ruyio-market"
+}

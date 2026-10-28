@@ -1,0 +1,136 @@
+{
+  "actions": [
+    {
+      "concurrencyGroup": "capture",
+      "hasSideEffects": true,
+      "id": "capture-pin",
+      "keywords": [
+        "screenshot",
+        "capture",
+        "pin",
+        "截图",
+        "钉图",
+        "贴图"
+      ],
+      "presentations": [
+        {
+          "title": "Capture and Pin",
+          "type": "commandPalette"
+        },
+        {
+          "defaultShortcut": "control+shift+p",
+          "type": "globalHotkey"
+        },
+        {
+          "title": "Capture and Pin",
+          "type": "menuBar"
+        }
+      ],
+      "symbol": "pin",
+      "title": "Capture and Pin"
+    },
+    {
+      "concurrencyGroup": "capture",
+      "hasSideEffects": true,
+      "id": "capture",
+      "keywords": [
+        "screenshot",
+        "capture",
+        "copy",
+        "截图",
+        "复制"
+      ],
+      "presentations": [
+        {
+          "title": "Capture to Clipboard",
+          "type": "commandPalette"
+        },
+        {
+          "defaultShortcut": "control+shift+a",
+          "type": "globalHotkey"
+        },
+        {
+          "title": "Capture to Clipboard",
+          "type": "menuBar"
+        }
+      ],
+      "symbol": "camera.viewfinder",
+      "title": "Capture to Clipboard"
+    },
+    {
+      "completion": "closePanel",
+      "id": "show-history",
+      "keywords": [
+        "screenshot",
+        "history",
+        "截图",
+        "历史"
+      ],
+      "opensView": "history",
+      "presentations": [
+        {
+          "title": "Show Screenshot History",
+          "type": "commandPalette"
+        },
+        {
+          "title": "Screenshot History",
+          "type": "menuBar"
+        }
+      ],
+      "symbol": "photo.on.rectangle",
+      "title": "Screenshot History"
+    }
+  ],
+  "architectures": [
+    "arm64"
+  ],
+  "author": "h025",
+  "bundlePath": "Screenshot.app",
+  "defaultLocale": "en",
+  "description": "Capture part of the screen, copy it, and pin it above other windows.",
+  "executable": "Screenshot.app/Contents/MacOS/Screenshot",
+  "id": "io.github.h025.screenshot",
+  "license": "MIT",
+  "localizations": {
+    "zh-Hans": {
+      "action.capture-pin.menu": "截图并钉住",
+      "action.capture-pin.palette": "截图并钉在屏幕上",
+      "action.capture-pin.title": "截图并钉住",
+      "action.capture.menu": "截图到剪贴板",
+      "action.capture.palette": "截图到剪贴板",
+      "action.capture.title": "截图到剪贴板",
+      "action.show-history.menu": "截图历史",
+      "action.show-history.palette": "显示截图历史",
+      "action.show-history.title": "截图历史",
+      "description": "框选屏幕截图，复制或钉在其他窗口上方。",
+      "name": "截图",
+      "view.history.title": "截图历史"
+    }
+  },
+  "minimumHostVersion": "1.1.0",
+  "minimumMacOSVersion": "15.0",
+  "name": "Screenshot",
+  "permissions": [
+    "screen.capture",
+    "windows.pin",
+    "clipboard.write"
+  ],
+  "runtime": "native-isolated",
+  "schemaVersion": 1,
+  "source": "https://github.com/h025/ruyio-market",
+  "storageSchemaVersion": 1,
+  "supportedIPC": [
+    1
+  ],
+  "supportedUISchema": [
+    1
+  ],
+  "version": "1.0.0",
+  "views": [
+    {
+      "id": "history",
+      "placement": "overlay",
+      "title": "Screenshot History"
+    }
+  ]
+}
