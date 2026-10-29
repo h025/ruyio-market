@@ -1,6 +1,6 @@
 import Foundation
+import os
 import RuyioPluginSDK
-import Synchronization
 
 /// Captures part of the screen through the host, keeps a short history in this plugin's store and pins
 /// captures above other windows. The plugin never reads the screen itself: the host runs the system
@@ -25,7 +25,7 @@ final class ScreenshotPlugin: RuyioPlugin {
     }
 
     let context: PluginContext
-    private let view = Mutex(ViewState())
+    private let view = OSAllocatedUnfairLock(initialState: ViewState())
 
     init(context: PluginContext) {
         self.context = context

@@ -17,7 +17,7 @@
 
 ## 准备
 
-- Apple Silicon Mac，macOS 15+，Xcode 26+，[XcodeGen](https://github.com/yonaskolb/XcodeGen)（`brew install xcodegen`）
+- Apple Silicon Mac，Xcode 26+（需要 macOS 15.6+），[XcodeGen](https://github.com/yonaskolb/XcodeGen)（`brew install xcodegen`）
 - 把 Ruyio 源码克隆到这个仓库旁边（插件 SDK 在其中的 `Packages/RuyioKit`）：
 
 ```sh
@@ -60,7 +60,8 @@ rm -rf plugins/hello/Plugin/build plugins/hello/Plugin/*.xcodeproj
 - `ENABLE_HARDENED_RUNTIME: YES`、`ARCHS: arm64`，`CODE_SIGN_IDENTITY: "-"`（编译时先临时签名，`build-plugin.sh` 打包前再用发布者证书重签，见下文“关于签名”）；
 - 签名权限只有 `com.apple.security.app-sandbox: true`；
 - **`CODE_SIGN_INJECT_BASE_ENTITLEMENTS: NO`**：否则 Xcode 会加上调试用的 `get-task-allow`，Ruyio 会以“签名权限不在白名单”拒绝安装；
-- `manifest.json` 作为资源打进 App；`LSUIElement: true`。
+- `manifest.json` 作为资源打进 App；`LSUIElement: true`；
+- 最低系统 macOS 14：`deploymentTarget` / `MACOSX_DEPLOYMENT_TARGET` / `LSMinimumSystemVersion` 都是 `14.0`，与清单的 `minimumMacOSVersion` 一致。macOS 15 才有的接口要用 `#available` 判断，或换成 14 就有的写法（例如用 `OSAllocatedUnfairLock` 代替 `Synchronization` 的 `Mutex`）；清单写高了，旧系统上的 Ruyio 不会显示也不会安装这个版本。
 
 ### 3. 写清单 `plugins/hello/Plugin/manifest.json`
 
@@ -79,7 +80,7 @@ rm -rf plugins/hello/Plugin/build plugins/hello/Plugin/*.xcodeproj
   "executable": "Hello.app/Contents/MacOS/Hello",
   "architectures": ["arm64"],
   "minimumHostVersion": "0.0.1",
-  "minimumMacOSVersion": "15.0",
+  "minimumMacOSVersion": "14.0",
   "permissions": ["clipboard.write"],
   "actions": [
     {
