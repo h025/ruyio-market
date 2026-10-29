@@ -22,6 +22,13 @@ PUBLISHER_NAME=${RUYIO_PUBLISHER_NAME:-Ruyio Plugin Publisher}
 . "$RUYIO_ROOT/Scripts/lib/signing-identity.sh"
 SIGNER=$(ensure_signing_identity "$PUBLISHER_KEYCHAIN" "$PUBLISHER_NAME" 7300)
 PUBLISHER="cert:$(certificate_sha256 "$PUBLISHER_KEYCHAIN" "$PUBLISHER_NAME")"
+# ruyio-plugin.json records the publisher of its releases. Another certificate (a new Mac without the
+# keychain, say) would ship a version every installed copy refuses as someone else's; stop before building.
+PINNED=$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1])).get("publisher", ""))' "$PLUGIN/ruyio-plugin.json" 2>/dev/null || true)
+if [ -n "$PINNED" ] && [ "$PINNED" != "$PUBLISHER" ]; then
+  echo "error: $NAME is published as $PINNED, but this Mac signs as $PUBLISHER; restore that keychain" >&2
+  exit 1
+fi
 
 cd "$PLUGIN/Plugin"
 field() { python3 -c "import json,sys; print(json.load(open('manifest.json'))[sys.argv[1]])" "$1"; }
@@ -52,12 +59,12 @@ rm -f "$OUT"
 (cd "$WORK" && ditto -c -k --sequesterRsrc --keepParent "$PRODUCT.ruyioplugin" "$OUT")
 SHA=$(shasum -a 256 "$OUT" | cut -d' ' -f1)
 
-python3 - "$PLUGIN/ruyio-plugin.json" "$VERSION" "releases/$VERSION/$PRODUCT.ruyioplugin.zip" "$SHA" <<'PY'
+python3 - "$PLUGIN/ruyio-plugin.json" "$VERSION" "releases/$VERSION/$PRODUCT.ruyioplugin.zip" "$SHA" "$PUBLISHER" <<'PY'
 import json, os, sys
-path, version, artifact, sha = sys.argv[1:]
+path, version, artifact, sha, publisher = sys.argv[1:]
 manifest = json.load(open("manifest.json"))
 descriptor = json.load(open(path)) if os.path.exists(path) else {"schemaVersion": 1, "kind": "plugin", "releases": []}
-descriptor.update(id=manifest["id"], name=manifest["name"], description=manifest["description"], source=manifest["source"])
+descriptor.update(id=manifest["id"], name=manifest["name"], description=manifest["description"], source=manifest["source"], publisher=publisher)
 release = {"version": version, "minimumHostVersion": manifest["minimumHostVersion"],
            "minimumMacOSVersion": manifest["minimumMacOSVersion"], "architectures": manifest["architectures"],
            "artifact": artifact, "sha256": sha}

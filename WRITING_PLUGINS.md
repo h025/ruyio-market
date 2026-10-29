@@ -236,6 +236,7 @@ Ruyio 不要求 Apple 公证，也不需要付费的 Apple 开发者账号。市
 - 第一次运行 `Scripts/build-plugin.sh` 时，会在 `~/Library/Keychains/ruyio-plugin-publisher.keychain-db` 创建一张自签名证书「Ruyio Plugin Publisher」（独立钥匙串，密码为空，不加入钥匙串搜索列表，签名时不会弹窗），之后每次打包都用它重签插件；
 - 这张证书就是你的**发布者身份**：Ruyio 记下它的 SHA-256（安装预览里显示为“发布者：自签名证书 XXXX XXXX…”），以后同一个插件 ID 的更新必须用同一张证书签名，别人无法冒充你发布更新，也拿不到插件已有的数据。**请备份这个钥匙串文件**，丢了以后只能换新证书，用户需要卸载后重装；
 - 想用别的证书时，设置 `RUYIO_PUBLISHER_KEYCHAIN` 和 `RUYIO_PUBLISHER_NAME`；
+- `ruyio-plugin.json` 会记下插件的发布者（`publisher` 字段）。之后打包时如果这台 Mac 用的是另一张证书（比如换了电脑却没带上钥匙串），脚本会在编译前就报错，免得发出一个所有用户都装不上的更新；
 - 用 Developer ID 签名并公证过的插件，安装预览会额外显示“已经 Apple 公证”，但这不是必需的；
 - ad-hoc（临时）签名的包只能在开发者模式下作为本地开发插件安装，不能从市场安装。
 

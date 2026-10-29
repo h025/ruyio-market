@@ -26,5 +26,6 @@
   "id": "io.github.h025.screenshot",
   "name": "Screenshot",
   "description": "Capture part of the screen, copy it, and pin it above other windows.",
-  "source": "https://github.com/h025/ruyio-market"
+  "source": "https://github.com/h025/ruyio-market",
+  "publisher": "cert:259f08d71cbd58378832b19d3770d1806f497879da57b0b03691accc3934eb17"
 }
