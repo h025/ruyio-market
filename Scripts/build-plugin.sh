@@ -38,7 +38,8 @@ mkdir -p build
 xcodegen generate --quiet
 xcodebuild -project "$PRODUCT.xcodeproj" -scheme "$PRODUCT" -configuration Release -derivedDataPath build/DerivedData -quiet build
 APP="build/DerivedData/Build/Products/Release/$BUNDLE"
-codesign --force --sign "$SIGNER" --keychain "$PUBLISHER_KEYCHAIN" --preserve-metadata=entitlements,flags,runtime --timestamp=none "$APP"
+with_signing_keychain "$PUBLISHER_KEYCHAIN" codesign --force --sign "$SIGNER" --keychain "$PUBLISHER_KEYCHAIN" \
+  --preserve-metadata=entitlements,flags,runtime --timestamp=none "$APP"
 codesign --verify --deep --strict "$APP"
 
 WORK=$(mktemp -d)
