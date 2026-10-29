@@ -11,6 +11,16 @@
       ],
       "artifact": "releases/1.0.0/Screenshot.ruyioplugin.zip",
       "sha256": "48ed0056f2ac1326afd6e6213df1bd237ba047d884504a569edf9d3fdafe2b9a"
+    },
+    {
+      "version": "1.0.1",
+      "minimumHostVersion": "0.0.1",
+      "minimumMacOSVersion": "15.0",
+      "architectures": [
+        "arm64"
+      ],
+      "artifact": "releases/1.0.1/Screenshot.ruyioplugin.zip",
+      "sha256": "d0758265b627fb02c10c8bc2874ffad9c2e56cf45891f9f1464ae69106419876"
     }
   ],
   "id": "io.github.h025.screenshot",

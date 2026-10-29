@@ -57,7 +57,7 @@ rm -rf plugins/hello/Plugin/build plugins/hello/Plugin/*.xcodeproj
 把 `name`、target 名、scheme 名、`PRODUCT_NAME` 都改成 `Hello`，`bundleIdPrefix` 和 `PRODUCT_BUNDLE_IDENTIFIER` 改成你的前缀和 ID（例如 `io.github.yourname`、`io.github.yourname.hello`，ID 要与清单里的 `id` 一致），`entitlements.path` 改成 `build/Hello.entitlements`，`CFBundleShortVersionString` 与清单 `version` 保持一致。保持这几项不变：
 
 - `packages.RuyioKit.path: ${RUYIO_ROOT}/Packages/RuyioKit`，依赖 `RuyioPluginSDK`；
-- `ENABLE_HARDENED_RUNTIME: YES`、`ARCHS: arm64`，`CODE_SIGN_IDENTITY: "-"`（临时签名，见下文“关于签名和公证”）；
+- `ENABLE_HARDENED_RUNTIME: YES`、`ARCHS: arm64`，`CODE_SIGN_IDENTITY: "-"`（编译时先临时签名，`build-plugin.sh` 打包前再用发布者证书重签，见下文“关于签名”）；
 - 签名权限只有 `com.apple.security.app-sandbox: true`；
 - **`CODE_SIGN_INJECT_BASE_ENTITLEMENTS: NO`**：否则 Xcode 会加上调试用的 `get-task-allow`，Ruyio 会以“签名权限不在白名单”拒绝安装；
 - `manifest.json` 作为资源打进 App；`LSUIElement: true`。
@@ -78,7 +78,7 @@ rm -rf plugins/hello/Plugin/build plugins/hello/Plugin/*.xcodeproj
   "bundlePath": "Hello.app",
   "executable": "Hello.app/Contents/MacOS/Hello",
   "architectures": ["arm64"],
-  "minimumHostVersion": "1.1.0",
+  "minimumHostVersion": "0.0.1",
   "minimumMacOSVersion": "15.0",
   "permissions": ["clipboard.write"],
   "actions": [
@@ -124,8 +124,8 @@ rm -rf plugins/hello/Plugin/build plugins/hello/Plugin/*.xcodeproj
 | `files.read.selected` | 读取用户在 Finder 中选中的文件 |
 | `apps.open` | 打开网页、终端、编辑器，在 Finder 中显示文件 |
 | `paste.automatic` | 界面关闭后由 Ruyio 自动粘贴回原 App |
-| `screen.capture` | 框选截图（Ruyio 1.1+） |
-| `windows.pin` | 钉图窗口（Ruyio 1.1+） |
+| `screen.capture` | 框选截图 |
+| `windows.pin` | 钉图窗口 |
 | `background` | 常驻运行 |
 | `network.client` | 联网（签名里还要加 `com.apple.security.network.client`） |
 
@@ -192,7 +192,7 @@ SDK 速查：
 Scripts/build-plugin.sh hello
 ```
 
-脚本会编译 Release 版，打包成 `plugins/hello/releases/<版本>/Hello.ruyioplugin.zip`（包内是 `Hello.ruyioplugin/` 目录，含 App 和一份与 App 内完全相同的 `manifest.json`），计算 SHA-256，并在 `plugins/hello/ruyio-plugin.json` 里记录这个版本（文件不存在时自动创建）。
+脚本会编译 Release 版，用发布者证书签名（见下文“关于签名”），打包成 `plugins/hello/releases/<版本>/Hello.ruyioplugin.zip`（包内是 `Hello.ruyioplugin/` 目录，含 App 和一份与 App 内完全相同的 `manifest.json`），计算 SHA-256，并在 `plugins/hello/ruyio-plugin.json` 里记录这个版本（文件不存在时自动创建）。
 
 试装：Ruyio › 通用设置 › 高级 › 打开**开发者模式** › 开发插件 › **选择本地开发插件…**，选刚生成的 zip。按 ⇧⌘Space 打开命令面板试用。改代码后要重新试装：先在插件详情中卸载（默认保留数据），再选新的安装包。
 
@@ -227,15 +227,19 @@ git push
 2. `Scripts/build-plugin.sh hello`：生成新的 `releases/<新版本>/` 并在 `ruyio-plugin.json` 里追加一项（旧版本保留）；
 3. 提交推送。用户的 Ruyio 检查更新时会提示“可更新”。
 
-新版本必须由同一个签名者签名；新增的权限会在用户更新时列出来请他确认。
+新版本必须由同一张发布者证书签名（`build-plugin.sh` 每次都用同一张）；新增的权限会在用户更新时列出来请他确认。
 
-## 关于签名和公证
+## 关于签名
 
-这个市场里的插件目前是**临时签名**、没有经过 Apple 公证，所以用户需要打开开发者模式才能安装，Ruyio 会把它们作为“开发者插件”安装。
+Ruyio 不要求 Apple 公证，也不需要付费的 Apple 开发者账号。市场里的插件只要求**证书签名**，自签名证书就够：
 
-要让用户在普通模式下安装，需要 Apple Developer Program 账号：用 Developer ID 签名、开启 Hardened Runtime、提交公证并 staple，再打包。具体命令见 Wiki 的[打包、签名与发布](https://github.com/h025/Ruyio/wiki/打包签名与发布)。
+- 第一次运行 `Scripts/build-plugin.sh` 时，会在 `~/Library/Keychains/ruyio-plugin-publisher.keychain-db` 创建一张自签名证书「Ruyio Plugin Publisher」（独立钥匙串，密码为空，不加入钥匙串搜索列表，签名时不会弹窗），之后每次打包都用它重签插件；
+- 这张证书就是你的**发布者身份**：Ruyio 记下它的 SHA-256（安装预览里显示为“发布者：自签名证书 XXXX XXXX…”），以后同一个插件 ID 的更新必须用同一张证书签名，别人无法冒充你发布更新，也拿不到插件已有的数据。**请备份这个钥匙串文件**，丢了以后只能换新证书，用户需要卸载后重装；
+- 想用别的证书时，设置 `RUYIO_PUBLISHER_KEYCHAIN` 和 `RUYIO_PUBLISHER_NAME`；
+- 用 Developer ID 签名并公证过的插件，安装预览会额外显示“已经 Apple 公证”，但这不是必需的；
+- ad-hoc（临时）签名的包只能在开发者模式下作为本地开发插件安装，不能从市场安装。
 
-无论哪种方式，Ruyio 安装时都会检查：必须开启 App 沙盒；签名权限只允许 `app-sandbox`（以及与 `network.client` 对应的 `network.client`）；签名标识等于 Bundle ID；`LSUIElement` 为真；不能内嵌其他可启动的程序（`.app`、`.xpc`、`.appex`、登录项等）；安装包内外的 `manifest.json` 完全一致；SHA-256 与描述文件一致。
+无论哪种签名，Ruyio 安装时都会检查：必须开启 App 沙盒；签名权限只允许 `app-sandbox`（以及与 `network.client` 对应的 `network.client`）；签名标识等于 Bundle ID；`LSUIElement` 为真；不能内嵌其他可启动的程序（`.app`、`.xpc`、`.appex`、登录项等）；安装包内外的 `manifest.json` 完全一致；SHA-256 与描述文件一致。
 
 ## 实例：截图插件
 

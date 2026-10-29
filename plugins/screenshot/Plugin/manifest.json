@@ -107,7 +107,7 @@
       "view.history.title": "截图历史"
     }
   },
-  "minimumHostVersion": "1.1.0",
+  "minimumHostVersion": "0.0.1",
   "minimumMacOSVersion": "15.0",
   "name": "Screenshot",
   "permissions": [
@@ -125,7 +125,7 @@
   "supportedUISchema": [
     1
   ],
-  "version": "1.0.0",
+  "version": "1.0.1",
   "views": [
     {
       "id": "history",
